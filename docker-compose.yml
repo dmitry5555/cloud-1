@@ -1,0 +1,54 @@
+services:
+  # wordpress:
+  #   build: ./requirements/wordpress/.
+  #   depends_on:
+  #     - mariadb
+  #   volumes:
+  #     - wp_vol:/var/www/html
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - net42
+
+  nginx:
+    build: ./requirements/nginx/.
+    command: nginx -g 'daemon off;'
+    volumes:
+      - wp_vol:/var/www/html
+    ports:
+      - 80:80
+      - 443:443
+    # depends_on:
+    #   - wordpress
+    env_file:
+      - .env
+    # networks:
+    #   - net42
+
+  mariadb:
+    # container_name: mariadb
+    build: ./mariadb/.
+    env_file:
+      - .env
+    # ports:
+    #   - 3306:3306
+    #depends_on:
+    #  - wordpress
+    volumes:
+      - db_vol:/var/lib/mysql
+    # networks:
+    #   - net42
+
+volumes:
+  db_vol:
+    # driver: local # local host
+    # driver_opts:
+    #   device: /Users/dmitrylarionov/Desktop/mysql
+    #   type: none
+    #   o: bind # any change affect immediately
+  # wp_vol:
+  #   driver: local
+  #   driver_opts:
+  #     device: /Users/dmitrylarionov/Desktop/wordpress
+  #     type: none
+  #     o: bind

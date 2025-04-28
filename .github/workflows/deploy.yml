@@ -1,0 +1,72 @@
+name: Cloud-0
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Docker Login
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker images
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7} -f ./wordpress/Dockerfile .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/db:${GITHUB_SHA::7} -f ./db/Dockerfile .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/db:${GITHUB_SHA::7}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7} -f ./phpmyadmin/Dockerfile .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7} -f ./nginx/Dockerfile .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Install SSH Key
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add known host
+        run: ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Server (SSH)
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "Stopping and removing old containers..."
+            docker stop nginx wordpress phpmyadmin db || true
+            docker rm nginx wordpress phpmyadmin db || true
+
+            echo "Pulling latest images..."
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7}
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/db:${GITHUB_SHA::7}
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7}
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
+
+            echo "Starting containers with docker-compose..."
+            cd /path/to/your/docker-compose/file
+            docker-compose up -d
+
+            echo "Setting up firewall (UFW)..."
+            sudo apt update
+            sudo apt install -y ufw
+            sudo ufw allow OpenSSH
+            sudo ufw allow 80
+            sudo ufw allow 443
+            sudo ufw deny 3306
+            sudo ufw enable
+            sudo ufw status
+
+            echo "Deployment complete!"
