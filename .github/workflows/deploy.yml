@@ -42,6 +42,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+          
             echo "Stopping and removing old containers..."
             docker stop nginx mariadb || true
             docker rm nginx mariadb || true
@@ -65,3 +66,4 @@ jobs:
             sudo ufw status
 
             echo "Deployment complete!!!!"
+          envs: GITHUB_SHA
