@@ -17,8 +17,12 @@ jobs:
 
       - name: Build and Push Docker images
         run: |
+          # docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7} -f ./wordpress/Dockerfile . # wordpress не используется в docker-compose.yml
+          # docker push ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7}
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7} -f ./mariadb/Dockerfile ./mariadb
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
+          # docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7} -f ./phpmyadmin/Dockerfile . # phpmyadmin не используется в docker-compose.yml
+          # docker push ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7}
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7} -f ./nginx/Dockerfile ./nginx
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
 
@@ -26,47 +30,44 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Test SSH Connection
-        uses: fifsky/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          user: ${{ secrets.SSH_USERNAME }}
-          pass: ${{ secrets.SSH_PASSWORD }}
-          command: echo "Connection test successful"
+      # - name: Install SSH Key
+      #   uses: webfactory/ssh-agent@v0.8.0
+      #   with:
+      #     password: ${{ secrets.SSH_PRIVATE_KEY }}  # Вместо key используем password
+      #     # ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy with SSH
-        uses: fifsky/ssh-action@master
+      # - name: Add known host
+      #   run: ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Server (SSH)
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
-          user: ${{ secrets.SSH_USERNAME }}
-          pass: ${{ secrets.SSH_PASSWORD }}
-          command: |
-            echo "Останавливаю и удаляю старые контейнеры..."
-            docker stop nginx mariadb || true
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            echo "Stopping and removing old containers..."
+            docker stop nginx mariadb || true # wordpress отсутствует в docker-compose.yml
             docker rm nginx mariadb || true
 
-            echo "Загружаю новые образы..."
+            echo "Pulling latest images..."
+            # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7} # wordpress отсутствует
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
+            # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7} # phpmyadmin отсутствует
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
 
-            echo "Создаю docker-compose.yml с новыми образами..."
+            echo "Starting containers with docker-compose..."
             cd ~/cloud-1
-            
-            # Заменяем директивы build на image в docker-compose.yml
-            sed -i "s|image: .*nginx.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}|g" docker-compose.yml
-            sed -i "s|image: .*mariadb.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}|g" docker-compose.yml
-            
-            echo "Запускаю контейнеры через docker-compose..."
             docker-compose up -d
 
-            echo "Настраиваю файрвол (UFW)..."
+            echo "Setting up firewall (UFW)..."
             sudo apt update
             sudo apt install -y ufw
             sudo ufw allow OpenSSH
             sudo ufw allow 80
             sudo ufw allow 443
             sudo ufw deny 3306
-            sudo ufw --force enable
+            sudo ufw enable
             sudo ufw status
 
-            echo "Деплой завершен успешно!"
+            echo "Deployment complete!"
