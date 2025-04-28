@@ -17,10 +17,10 @@ jobs:
 
       - name: Build and Push Docker images
         run: |
-          # docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7} -f ./requirements/wordpress/Dockerfile . # wordpress не используется в docker-compose.yml
+          # docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7} -f ./wordpress/Dockerfile . # wordpress не используется в docker-compose.yml
           # docker push ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7}
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/db:${GITHUB_SHA::7} -f ./mariadb/Dockerfile ./mariadb
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/db:${GITHUB_SHA::7}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7} -f ./mariadb/Dockerfile ./mariadb
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
           # docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7} -f ./phpmyadmin/Dockerfile . # phpmyadmin не используется в docker-compose.yml
           # docker push ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7}
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7} -f ./requirements/nginx/Dockerfile .
@@ -51,7 +51,7 @@ jobs:
 
             echo "Pulling latest images..."
             # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7} # wordpress отсутствует
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/db:${GITHUB_SHA::7}
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
             # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7} # phpmyadmin отсутствует
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
 
