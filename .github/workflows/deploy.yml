@@ -64,4 +64,4 @@ jobs:
             sudo ufw --force enable
             sudo ufw status
 
-            echo "Deployment complete!!"
+            echo "Deployment complete! or not"
