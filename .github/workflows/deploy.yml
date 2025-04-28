@@ -23,7 +23,7 @@ jobs:
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
           # docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7} -f ./phpmyadmin/Dockerfile . # phpmyadmin не используется в docker-compose.yml
           # docker push ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7}
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7} -f ./requirements/nginx/Dockerfile .
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7} -f ./nginx/Dockerfile .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
 
   deploy:
