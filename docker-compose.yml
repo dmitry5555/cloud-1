@@ -41,13 +41,13 @@ services:
 
 volumes:
   db_vol:
-    # driver: local # local host
+    driver: local # local host
     # driver_opts:
     #   device: /Users/dmitrylarionov/Desktop/mysql
     #   type: none
     #   o: bind # any change affect immediately
   wp_vol:
-  #   driver: local
+    driver: local
   #   driver_opts:
   #     device: /Users/dmitrylarionov/Desktop/wordpress
   #     type: none
