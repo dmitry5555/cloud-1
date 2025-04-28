@@ -1,4 +1,4 @@
-name: Cloud-0
+name: Cloud-0 Deploy
 
 on:
   push:
@@ -21,20 +21,13 @@ jobs:
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7} -f ./nginx/Dockerfile ./nginx
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
+        env:
+          GITHUB_SHA: ${{ github.sha }}
 
   deploy:
-    runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-latest
     steps:
-      # Проверка формата ключа (удалите этот шаг после отладки!)
-      - name: Debug SSH key format
-        run: |
-          echo "First line of SSH key: "
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | head -1
-          echo "Key has following number of lines: "
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | wc -l
-      
-      # Альтернативный способ с использованием действия для SSH
       - name: Deploy via ssh-action
         uses: appleboy/ssh-action@master
         with:
@@ -42,28 +35,33 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-          
+            echo "Starting deployment..."
+
+            # Определяем директорию для развертывания
+            DEPLOY_DIR="/home/deploy/my-app"
+
+            # Клонируем репозиторий
+            echo "Cloning repository..."
+            git clone --depth 1 -b main $GITHUB_REPOSITORY "$DEPLOY_DIR"
+
+            # Переходим в директорию с docker-compose.yml
+            cd "$DEPLOY_DIR"
+
+            # Заменяем переменные в docker-compose.yml
+            echo "Replacing variables in docker-compose.yml..."
+            export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            export GITHUB_SHA=${{ github.sha }}
+            sed -i "s|YOUR_DOCKERHUB_USERNAME/mariadb:.*|${DOCKERHUB_USERNAME}/mariadb:${GITHUB_SHA::7}|g" docker-compose.yml
+            sed -i "s|YOUR_DOCKERHUB_USERNAME/nginx:.*|${DOCKERHUB_USERNAME}/nginx:${GITHUB_SHA::7}|g" docker-compose.yml
+
+            # Останавливаем и удаляем старые контейнеры
             echo "Stopping and removing old containers..."
-            docker stop nginx mariadb || true
-            docker rm nginx mariadb || true
+            docker-compose down || true
 
-            echo "Pulling latest images..."
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
-
+            # Запускаем docker-compose
             echo "Starting containers with docker-compose..."
-            cd ~/cloud-1
-            GITHUB_SHA=${GITHUB_SHA} docker-compose up -d --build
-
-            echo "Setting up firewall (UFW)..."
-            sudo apt update
-            sudo apt install -y ufw
-            sudo ufw allow OpenSSH
-            sudo ufw allow 80
-            sudo ufw allow 443
-            sudo ufw deny 3306
-            sudo ufw --force enable
-            sudo ufw status
+            docker-compose up -d --build
 
             echo "Deployment complete!!!!"
-          envs: GITHUB_SHA
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
