@@ -53,7 +53,7 @@ jobs:
 
             echo "Starting containers with docker-compose..."
             cd ~/cloud-1
-            docker-compose up -d --build
+            GITHUB_SHA=${GITHUB_SHA} docker-compose up -d --build
 
             echo "Setting up firewall (UFW)..."
             sudo apt update
