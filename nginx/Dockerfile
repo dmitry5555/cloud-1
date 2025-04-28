@@ -5,24 +5,21 @@ RUN apt update && apt install -y \
     nginx \
     openssl \
     certbot \
-    python3-certbot-nginx
-    # cron
+    python3-certbot-nginx \
+    cron
 
-# Создаем директорию для SSL сертификатов
+# Создаем директорию для веб-контента и SSL
+RUN mkdir -p /var/www/html
 RUN mkdir -p /etc/nginx/ssl
 
-# Копируем конфигурацию Nginx
+# Копируем временную конфигурацию Nginx (без SSL)
+COPY ./nginx-init.conf /etc/nginx/nginx-init.conf
 COPY ./nginx.conf /etc/nginx/nginx.conf
-
-# Устанавливаем рабочую директорию
-WORKDIR /var/www/html
-
-# Генерация SSL сертификатов с использованием certbot
-# Здесь Certbot будет автоматически настраивать сертификат для вашего домена
-RUN certbot --nginx -d 217-1141197.hopto.org -d www.217-1141197.hopto.org --non-interactive --agree-tos -m mikrolux@gmail.com
 COPY ./index.html /usr/share/nginx/html/index.html
 
-# Команда для старта Nginx и Cron (если нужен для автоматического обновления сертификатов)
-RUN chmod +x /usr/share/nginx/html/index.html
+# Копируем скрипт запуска
+COPY ./start.sh /start.sh
+RUN chmod +x /start.sh
 
-CMD ["nginx", "-g", "daemon off;"]
+# Запуск скрипта при старте контейнера
+CMD ["/start.sh"]
