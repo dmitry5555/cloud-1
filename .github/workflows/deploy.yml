@@ -26,15 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      # Проверка формата ключа (удалите этот шаг после отладки!)
-      - name: Debug SSH key format
-        run: |
-          echo "First line of SSH key: "
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | head -1
-          echo "Key has following number of lines: "
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | wc -l
+      - name: Checkout code
+        uses: actions/checkout@v3
       
-      # Альтернативный способ с использованием действия для SSH
       - name: Deploy via ssh-action
         uses: appleboy/ssh-action@master
         with:
@@ -42,18 +36,51 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # Создаем директорию для проекта, если её нет
+            echo "Creating project directory..."
+            mkdir -p ~/cloud-1
+            
+            # Останавливаем и удаляем старые контейнеры
             echo "Stopping and removing old containers..."
             docker stop nginx mariadb || true
             docker rm nginx mariadb || true
 
+            # Получаем новые образы
             echo "Pulling latest images with love..."
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
-
+            
+            # Создаем docker-compose.yml файл
+            echo "Creating docker-compose.yml file..."
+            cat > ~/cloud-1/docker-compose.yml << 'EOF'
+            services:
+              nginx:
+                image: ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
+                ports:
+                  - 80:80
+                  - 443:443
+                # Временно отключаем том для проверки работы
+                # volumes:
+                #   - wp_vol:/var/www/html
+            
+              mariadb:
+                image: ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
+                volumes:
+                  - db_vol:/var/lib/mysql
+            
+            volumes:
+              db_vol:
+                driver: local
+              wp_vol:
+                driver: local
+            EOF
+            
+            # Запускаем контейнеры
             echo "Starting containers with docker-compose..."
             cd ~/cloud-1
             docker-compose up -d
-
+            
+            # Настраиваем файрвол
             echo "Setting up firewall (UFW)..."
             sudo apt update
             sudo apt install -y ufw
@@ -64,4 +91,8 @@ jobs:
             sudo ufw --force enable
             sudo ufw status
 
+            # Проверяем логи контейнера nginx для диагностики
+            echo "Checking nginx container logs..."
+            docker logs nginx
+            
             echo "Deployment complete!!!!"
