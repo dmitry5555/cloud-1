@@ -50,7 +50,7 @@ jobs:
             docker stop nginx mariadb || true # wordpress отсутствует в docker-compose.yml
             docker rm nginx mariadb || true
 
-            echo "Pulling latest images..."
+            echo "Pulling latest images...."
             # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7} # wordpress отсутствует
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
             # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7} # phpmyadmin отсутствует
