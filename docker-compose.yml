@@ -46,7 +46,7 @@ volumes:
     #   device: /Users/dmitrylarionov/Desktop/mysql
     #   type: none
     #   o: bind # any change affect immediately
-  # wp_vol:
+  wp_vol:
   #   driver: local
   #   driver_opts:
   #     device: /Users/dmitrylarionov/Desktop/wordpress
