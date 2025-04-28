@@ -46,7 +46,7 @@ jobs:
             docker stop nginx mariadb || true
             docker rm nginx mariadb || true
 
-            echo "Pulling latest images..."
+            echo "Pulling latest images with love..."
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
 
