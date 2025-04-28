@@ -22,7 +22,7 @@ WORKDIR /var/www/html
 RUN certbot --nginx -d 217-1141197.hopto.org -d www.217-1141197.hopto.org --non-interactive --agree-tos -m mikrolux@gmail.com
 
 # Команда для старта Nginx и Cron (если нужен для автоматического обновления сертификатов)
-COPY index.html /usr/share/nginx/html/index.html
+COPY ./index.html /usr/share/nginx/html/index.html
 RUN chmod +x /usr/share/nginx/html/index.html
 
 CMD ["nginx", "-g", "daemon off;"]
