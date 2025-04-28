@@ -26,35 +26,36 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      # Проверка формата ключа (удалите этот шаг после отладки!)
-      - name: Debug SSH key format
+      - name: Configure SSH
         run: |
-          echo "First line of SSH key: "
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | head -1
-          echo "Key has following number of lines: "
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | wc -l
-      
-      # Альтернативный способ с использованием действия для SSH
-      - name: Deploy via ssh-action
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "Stopping and removing old containers..."
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH Connection
+        run: |
+          ssh -v -i ~/.ssh/id_rsa ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "echo Connection test successful"
+
+      - name: Deploy to Server
+        run: |
+          export DOCKERHUB_USERNAME="${{ secrets.DOCKERHUB_USERNAME }}"
+          export GITHUB_SHA_SHORT="${GITHUB_SHA::7}"
+          
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOT'
+            echo "Останавливаю и удаляю старые контейнеры..."
             docker stop nginx mariadb || true
             docker rm nginx mariadb || true
 
-            echo "Pulling latest images..."
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
+            echo "Загружаю новые образы..."
+            docker pull ${DOCKERHUB_USERNAME}/mariadb:${GITHUB_SHA_SHORT}
+            docker pull ${DOCKERHUB_USERNAME}/nginx:${GITHUB_SHA_SHORT}
 
-            echo "Starting containers with docker-compose..."
+            echo "Запускаю контейнеры через docker-compose..."
             cd ~/cloud-1
             docker-compose up -d
 
-            echo "Setting up firewall (UFW)..."
+            echo "Настраиваю файрвол (UFW)..."
             sudo apt update
             sudo apt install -y ufw
             sudo ufw allow OpenSSH
@@ -64,4 +65,9 @@ jobs:
             sudo ufw --force enable
             sudo ufw status
 
-            echo "Deployment complete! or not"
+            echo "Деплой завершен успешно!"
+          EOT
+
+      - name: Clean up
+        if: always()
+        run: rm -f ~/.ssh/id_rsa
