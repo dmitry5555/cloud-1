@@ -1,6 +1,8 @@
 #!/bin/bash
 
 echo "Запуск nginx с базовой конфигурацией..."
+cp ./nginx-init.conf /etc/nginx/nginx.conf
+echo "Запуск nginx с базовой конфигурацией..."
 nginx
 
 echo "Ожидание 5 секунд перед запуском certbot..."
@@ -15,8 +17,11 @@ chmod 0644 /etc/cron.d/certbot-renew
 crontab /etc/cron.d/certbot-renew
 service cron start
 
+# Здесь должна быть загрузка финальной конфигурации, а не копирование файла в себя
 echo "Перезапуск nginx с окончательной конфигурацией..."
-cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf
+# Если у вас есть отдельная конфигурация, используйте её
+cp ./nginx.conf /etc/nginx/nginx.conf
+# Или используйте конфигурацию, модифицированную certbot
 nginx -s reload
 
 echo "Запуск nginx в режиме foreground..."
