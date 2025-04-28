@@ -6,7 +6,8 @@ RUN apt update && apt install -y \
     openssl \
     certbot \
     python3-certbot-nginx
-    
+    # cron
+
 # Создаем директорию для SSL сертификатов
 RUN mkdir -p /etc/nginx/ssl
 
