@@ -17,13 +17,13 @@ jobs:
 
       - name: Build and Push Docker images
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7} -f ./wordpress/Dockerfile .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7}
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/db:${GITHUB_SHA::7} -f ./db/Dockerfile .
+          # docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7} -f ./requirements/wordpress/Dockerfile . # wordpress не используется в docker-compose.yml
+          # docker push ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/db:${GITHUB_SHA::7} -f ./mariadb/Dockerfile .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/db:${GITHUB_SHA::7}
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7} -f ./phpmyadmin/Dockerfile .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7}
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7} -f ./nginx/Dockerfile .
+          # docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7} -f ./phpmyadmin/Dockerfile . # phpmyadmin не используется в docker-compose.yml
+          # docker push ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7} -f ./requirements/nginx/Dockerfile .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
 
   deploy:
@@ -46,13 +46,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "Stopping and removing old containers..."
-            docker stop nginx wordpress phpmyadmin db || true
-            docker rm nginx wordpress phpmyadmin db || true
+            docker stop nginx mariadb || true # wordpress отсутствует в docker-compose.yml
+            docker rm nginx mariadb || true
 
             echo "Pulling latest images..."
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7}
+            # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wordpress:${GITHUB_SHA::7} # wordpress отсутствует
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/db:${GITHUB_SHA::7}
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7}
+            # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/phpmyadmin:${GITHUB_SHA::7} # phpmyadmin отсутствует
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
 
             echo "Starting containers with docker-compose..."
