@@ -15,7 +15,7 @@ RUN mkdir -p /etc/nginx/ssl
 # Копируем временную конфигурацию Nginx (без SSL)
 COPY ./nginx-init.conf /etc/nginx/nginx-init.conf
 COPY ./nginx.conf /etc/nginx/nginx.conf
-COPY ./index.html /usr/share/nginx/html/index.html
+COPY ./index.html /var/www/html/index.html
 
 # Копируем скрипт запуска
 COPY ./start.sh /start.sh
