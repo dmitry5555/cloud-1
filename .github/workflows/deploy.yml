@@ -39,13 +39,20 @@ jobs:
 
             # Определяем директорию для развертывания
             DEPLOY_DIR="/home/deploy/my-app"
+            mkdir -p "$DEPLOY_DIR"
 
             # Клонируем репозиторий
             echo "Cloning repository..."
-            git clone --depth 1 -b main $GITHUB_REPOSITORY "$DEPLOY_DIR"
+            git clone --depth 1 -b main https://github.com/${{ github.repository }}.git "$DEPLOY_DIR" || (cd "$DEPLOY_DIR" && git pull)
 
             # Переходим в директорию с docker-compose.yml
             cd "$DEPLOY_DIR"
+
+            # # Создаем .env файл если его нет
+            # if [ ! -f .env ]; then
+            #   touch .env
+            #   # Добавьте необходимые переменные окружения
+            # fi
 
             # Заменяем переменные в docker-compose.yml
             echo "Replacing variables in docker-compose.yml..."
