@@ -66,21 +66,4 @@ jobs:
             docker load -i mariadb.tar
             docker load -i nginx.tar
 
-            # # Создаем docker-compose.yml (пример, если его нет в репо)
-            # cat > docker-compose.yml <<EOF
-            # version: "3.8"
-            # services:
-            #   nginx:
-            #     image: nginx:latest # Используем локальные имена
-            #     ports:
-            #       - 80:80
-            #       - 443:443
-            #   mariadb:
-            #     image: mariadb:latest # Используем локальные имена
-            #     volumes:
-            #       - db_vol:/var/lib/mysql
-            # volumes:
-            #   db_vol:
-            # EOF
-
             docker-compose up -d # Запускаем УЖЕ собранные образы
