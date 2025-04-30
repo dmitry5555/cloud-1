@@ -35,7 +35,7 @@ jobs:
           docker save -o nginx.tar nginx:latest
 
       - name: Upload Docker images
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-images
           path: "*.tar"
