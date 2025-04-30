@@ -83,4 +83,4 @@ jobs:
             #   db_vol:
             # EOF
 
-            docker-compose up -d --build # Запускаем
+            docker-compose up -d # Запускаем УЖЕ собранные образы
