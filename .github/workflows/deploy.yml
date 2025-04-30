@@ -49,10 +49,10 @@ jobs:
             cd "$DEPLOY_DIR"
 
             # # Создаем .env файл если его нет
-            # if [ ! -f .env ]; then
-            #   touch .env
-            #   # Добавьте необходимые переменные окружения
-            # fi
+            if [ ! -f .env ]; then
+              touch .env
+              # Добавьте необходимые переменные окружения
+            fi
 
             # Заменяем переменные в docker-compose.yml
             echo "Replacing variables in docker-compose.yml..."
