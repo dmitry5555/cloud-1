@@ -50,7 +50,11 @@ jobs:
 
             # # Создаем .env файл если его нет
             if [ ! -f .env ]; then
-              touch .env
+              echo "Creating .env file..."
+              echo "DB_NAME=wordpress" > .env
+              echo "DB_USER=root" >> .env
+              echo "DB_PASSWORD=my-secret-pw" >> .env
+              echo "DB_HOST=mariadb" >> .env
               # Добавьте необходимые переменные окружения
             fi
 
