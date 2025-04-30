@@ -32,7 +32,6 @@ jobs:
           name: docker-images
           path: "*.tar"
 
-jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
