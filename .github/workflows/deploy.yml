@@ -12,22 +12,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Docker Login
-        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker Login (optional if using ghcr.io)
+        # Если используете ghcr.io, нужно залогиниться
+        # run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Docker images
+      - name: Build Docker images
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7} -f ./mariadb/Dockerfile ./mariadb
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/mariadb:${GITHUB_SHA::7}
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7} -f ./nginx/Dockerfile ./nginx
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/nginx:${GITHUB_SHA::7}
-        env:
-          GITHUB_SHA: ${{ github.sha }}
+          docker build -t mariadb:latest -f ./mariadb/Dockerfile ./mariadb
+          docker build -t nginx:latest -f ./nginx/Dockerfile ./nginx
 
+      - name: Save Docker images
+        run: |
+          docker save -o mariadb.tar mariadb:latest
+          docker save -o nginx.tar nginx:latest
+
+      - name: Upload Docker images
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-images
+          path: "*.tar"
+
+jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Download Docker images
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-images
+          path: .
+
       - name: Deploy via ssh-action
         uses: appleboy/ssh-action@master
         with:
@@ -36,43 +51,29 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "Starting deployment..."
-
-            # Определяем директорию для развертывания
             DEPLOY_DIR="/home/deploy/my-app"
             mkdir -p "$DEPLOY_DIR"
-
-            # Клонируем репозиторий
-            echo "Cloning repository..."
-            git clone --depth 1 -b main https://github.com/${{ github.repository }}.git "$DEPLOY_DIR" || (cd "$DEPLOY_DIR" && git pull)
-
-            # Переходим в директорию с docker-compose.yml
             cd "$DEPLOY_DIR"
 
-            # # Создаем .env файл если его нет
-            if [ ! -f .env ]; then
-              echo "Creating .env file..."
-              echo "DB_NAME=wordpress" > .env
-              echo "DB_USER=root" >> .env
-              echo "DB_PASSWORD=my-secret-pw" >> .env
-              echo "DB_HOST=mariadb" >> .env
-              # Добавьте необходимые переменные окружения
-            fi
+            # Load Docker images
+            docker load -i mariadb.tar
+            docker load -i nginx.tar
 
-            # Заменяем переменные в docker-compose.yml
-            echo "Replacing variables in docker-compose.yml..."
-            export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-            export GITHUB_SHA=${{ github.sha }}
-            sed -i "s|YOUR_DOCKERHUB_USERNAME/mariadb:.*|${DOCKERHUB_USERNAME}/mariadb:${GITHUB_SHA::7}|g" docker-compose.yml
-            sed -i "s|YOUR_DOCKERHUB_USERNAME/nginx:.*|${DOCKERHUB_USERNAME}/nginx:${GITHUB_SHA::7}|g" docker-compose.yml
+            # Создаем docker-compose.yml (пример, если его нет в репо)
+            cat > docker-compose.yml <<EOF
+            version: "3.8"
+            services:
+              nginx:
+                image: nginx:latest # Используем локальные имена
+                ports:
+                  - 80:80
+                  - 443:443
+              mariadb:
+                image: mariadb:latest # Используем локальные имена
+                volumes:
+                  - db_vol:/var/lib/mysql
+            volumes:
+              db_vol:
+            EOF
 
-            # Останавливаем и удаляем старые контейнеры
-            echo "Stopping and removing old containers..."
-            docker-compose down || true
-
-            # Запускаем docker-compose
-            echo "Starting containers with docker-compose..."
-            docker-compose up -d --build
-
-            echo "Deployment complete!!!!"
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
+            docker-compose up -d --build # Запускаем
