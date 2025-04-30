@@ -24,7 +24,7 @@
 # # Запуск скрипта при старте контейнера
 # CMD ["/start.sh"]
 
-FROM nginx:stable-debian
+FROM nginx:latest
 
 # Копируем конфигурационный файл
 COPY nginx-init.conf /etc/nginx/nginx.conf

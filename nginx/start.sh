@@ -5,8 +5,8 @@ cp ./nginx-init.conf /etc/nginx/nginx.conf
 echo "Запуск nginx с базовой конфигурацией..."
 nginx
 
-echo "Ожидание 30 секунд перед запуском certbot..."
-sleep 30
+# echo "Ожидание 30 секунд перед запуском certbot..."
+# sleep 30
 
 echo "Запуск certbot..."
 certbot --nginx -d 217-1141197.hopto.org -d www.217-1141197.hopto.org --non-interactive --agree-tos -m mikrolux@gmail.com
