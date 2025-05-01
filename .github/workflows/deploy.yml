@@ -26,13 +26,13 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker build -t mariadb:latest -f ./mariadb/Dockerfile ./mariadb
-          docker build -t nginx:latest -f ./nginx/Dockerfile ./nginx
+          docker build -t mariadb:cloud-1 -f ./mariadb/Dockerfile ./mariadb
+          docker build -t nginx:cloud-1 -f ./nginx/Dockerfile ./nginx
 
       - name: Save Docker images
         run: |
-          docker save -o mariadb.tar mariadb:latest
-          docker save -o nginx.tar nginx:latest
+          docker save -o mariadb.tar mariadb:cloud-1
+          docker save -o nginx.tar nginx:cloud-1
 
       - name: Upload Docker images
         uses: actions/upload-artifact@v4

@@ -1,28 +1,22 @@
 #!/bin/bash
 
-echo "Запуск nginx с базовой конфигурацией..."
-cp ./nginx-init.conf /etc/nginx/nginx.conf
-echo "Запуск nginx с базовой конфигурацией..."
+echo "Старт: временная конфигурация nginx (без SSL)..."
+cp /etc/nginx/nginx-init.conf /etc/nginx/nginx.conf
 nginx
 
-# echo "Ожидание 30 секунд перед запуском certbot..."
-# sleep 30
-
-echo "Запуск certbot..."
+echo "Получение SSL через certbot..."
 certbot --nginx -d 217-1141197.hopto.org -d www.217-1141197.hopto.org --non-interactive --agree-tos -m mikrolux@gmail.com
 
-echo "Настройка автоматического обновления сертификатов..."
-echo "0 12 * * * certbot renew --quiet" > /etc/cron.d/certbot-renew
-chmod 0644 /etc/cron.d/certbot-renew
-crontab /etc/cron.d/certbot-renew
-service cron start
+echo "Установка основного SSL-конфига nginx..."
+cp /etc/nginx/nginx-ssl.conf /etc/nginx/nginx.conf
 
-# Вместо копирования конфигурации - перезагрузка!
-echo "Перезагрузка nginx с окончательной конфигурацией..."
+echo "Перезапуск nginx..."
 nginx -s reload
 
-echo "Запуск nginx в режиме foreground..."
-# Останавливаем текущий процесс nginx (это может быть лишним, если reload работает)
-nginx -s stop
-# Запускаем новый в foreground режиме
+echo "Настройка автоматического продления сертификата..."
+echo "0 12 * * * root certbot renew --quiet && nginx -s reload" > /etc/cron.d/certbot-renew
+chmod 0644 /etc/cron.d/certbot-renew
+service cron start
+
+echo "Запуск nginx в foreground..."
 exec nginx -g "daemon off;"

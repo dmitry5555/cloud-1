@@ -11,7 +11,7 @@ services:
   #     - net42
 
   nginx:
-    image: nginx:latest 
+    image: nginx:cloud-1 
     command: nginx -g 'daemon off;'
     # volumes:
     #   - wp_vol:/var/www/html
@@ -27,7 +27,7 @@ services:
 
   mariadb:
     # container_name: mariadb
-    image: mariadb:latest 
+    image: mariadb:cloud-1 
     env_file:
       - .env
     # ports:
