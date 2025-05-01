@@ -5,7 +5,7 @@ cp /etc/nginx/nginx-init.conf /etc/nginx/nginx.conf
 nginx
 
 echo "Получение SSL через certbot..."
-certbot --nginx -d 217-1141197.hopto.org -d www.217-1141197.hopto.org --non-interactive --agree-tos -m mikrolux@gmail.com
+certbot --nginx -d 217-1141197.hopto.org --non-interactive --agree-tos -m mikrolux@gmail.com > /var/log/certbot.log 2>&1
 
 echo "Установка основного SSL-конфига nginx..."
 cp /etc/nginx/nginx-ssl.conf /etc/nginx/nginx.conf
