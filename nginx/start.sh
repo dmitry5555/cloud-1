@@ -14,10 +14,10 @@ echo "Установка основного SSL-конфига nginx..."
 cp /etc/nginx/nginx-ssl.conf /etc/nginx/nginx.conf
 
 echo "Перезапуск nginx..."
-nginx -s reload || nginx
+nginx stop
 
-echo "Nginx запущен, переход в режим ожидания..."
-tail -f /dev/null
+# echo "Nginx запущен, переход в режим ожидания..."
+# tail -f /dev/null
 
 # echo "Настройка автоматического продления сертификата..."
 # echo "0 12 * * * root certbot renew --quiet && nginx -s reload" > /etc/cron.d/certbot-renew
@@ -25,4 +25,4 @@ tail -f /dev/null
 # service cron start
 
 # echo "Запуск nginx в foreground..."
-# exec nginx -g "daemon off;"
+exec nginx -g "daemon off;"
