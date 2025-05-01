@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 echo "Старт: временная конфигурация nginx (без SSL)..."
 cp /etc/nginx/nginx-init.conf /etc/nginx/nginx.conf
