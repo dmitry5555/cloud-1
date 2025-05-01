@@ -12,7 +12,7 @@ services:
 
   nginx:
     image: nginx:cloud1
-    command: nginx -g 'daemon off;'
+    # command: nginx -g 'daemon off;'
     # volumes:
     #   - wp_vol:/var/www/html
     ports:
