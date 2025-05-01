@@ -12,6 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+
       # This step is commented out, but it's missing a run or uses key
       # Replace this:
       # - name: Docker Login (optional if using ghcr.io)
