@@ -22,6 +22,8 @@ services:
     #   - wordpress
     env_file:
       - .env
+    volumes:
+      - nginx_vol:/etc/letsencrypt
     # networks:
     #   - net42
 
@@ -52,3 +54,5 @@ volumes:
   #     device: /Users/dmitrylarionov/Desktop/wordpress
   #     type: none
   #     o: bind
+  nginx_vol:
+    driver: local # local host
