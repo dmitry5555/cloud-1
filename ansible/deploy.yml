@@ -2,6 +2,13 @@
 - hosts: webservers
   become: true
   tasks:
+    - name: Создание пользователя deploy
+      user:
+        name: deploy
+        shell: /bin/bash
+        create_home: yes
+        system: yes
+  
     - name: Создание директории развертывания
       file:
         path: /home/deploy/my-app
