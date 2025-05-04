@@ -25,7 +25,6 @@ RUN chmod +x /start.sh
 # Запуск скрипта при старте контейнера
 CMD ["/start.sh"]
 
-
 # FROM nginx:cloud-1
 
 # # Копируем конфигурационный файл
