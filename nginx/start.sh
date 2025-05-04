@@ -14,7 +14,7 @@ if [ -f "/etc/letsencrypt/live/${HOST_DOMAIN}/fullchain.pem" ]; then
   echo "Сертификат уже существует, пропускаем выдачу."
 else
   echo "Получение SSL через certbot..."
-  certbot --nginx -d {{ DOMAIN }} --non-interactive --agree-tos -m mikrolux@gmail.com
+  certbot --nginx -d ${HOST_DOMAIN} --non-interactive --agree-tos -m mikrolux@gmail.com
 fi
 
 # Установка основного SSL-конфига nginx
