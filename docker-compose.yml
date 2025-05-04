@@ -22,6 +22,8 @@ services:
     #   - wordpress
     env_file:
       - .env
+    environment:
+      - HOST_DOMAIN=${HOST_DOMAIN}
     volumes:
       - nginx_vol:/etc/letsencrypt
     # networks:

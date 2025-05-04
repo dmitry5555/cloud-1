@@ -12,17 +12,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # This step is commented out, but it's missing a run or uses key
-      # Replace this:
-      # - name: Docker Login (optional if using ghcr.io)
-      #   # Если используете ghcr.io, нужно залогиниться
-      #   # run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-      
-      # With this:
       - name: Docker Login (optional if using ghcr.io)
         run: echo "Docker login step is skipped"
-        # If you need it later, uncomment the next line:
-        # run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker images
         run: |
@@ -53,45 +44,26 @@ jobs:
           name: docker-images
           path: .
 
-      - name: Copy compose
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml"
-          target: "/home/deploy/my-app/"
+      - name: Set up SSH keys
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/web1_private_key
+          chmod 600 ~/.ssh/web1_private_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/web2_private_key
+          chmod 600 ~/.ssh/web2_private_key
+          echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config # disable host key checking
+          
+          # Move private keys to ansible directory
+          mkdir -p ansible
+          mv ~/.ssh/web1_private_key ansible/web1_private_key
+          mv ~/.ssh/web2_private_key ansible/web2_private_key
 
-      - name: Copy Docker tarballs
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "*.tar"
-          target: "/home/deploy/my-app/"
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
 
-      - name: Deploy via ssh-action
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "Starting deployment..."
-            DEPLOY_DIR="/home/deploy/my-app"
-            mkdir -p "$DEPLOY_DIR"
-            cd "$DEPLOY_DIR"
-
-            # delete old
-            docker image rm -f mariadb:cloud1 || true
-            docker image rm -f nginx:cloud1 || true
-
-            # cleanup
-            docker system prune -f
-            
-            # Load Docker images
-            docker load -i mariadb.tar
-            docker load -i nginx.tar
-
-            docker-compose up -d
+      - name: Run Ansible playbook
+        run: ansible-playbook -i ansible/hosts ansible/deploy.yml
+        env:
+            ANSIBLE_HOST_KEY_CHECKING: False

@@ -10,11 +10,11 @@ nginx
 curl -I http://localhost || echo "Локальный nginx не отвечает"
 
 # Проверка наличия сертификата и получение через certbot, если необходимо
-if [ -f "/etc/letsencrypt/live/217-1141197.hopto.org/fullchain.pem" ]; then
+if [ -f "/etc/letsencrypt/live/${HOST_DOMAIN}/fullchain.pem" ]; then
   echo "Сертификат уже существует, пропускаем выдачу."
 else
   echo "Получение SSL через certbot..."
-  certbot --nginx -d 217-1141197.hopto.org --non-interactive --agree-tos -m mikrolux@gmail.com
+  certbot --nginx -d {{ DOMAIN }} --non-interactive --agree-tos -m mikrolux@gmail.com
 fi
 
 # Установка основного SSL-конфига nginx

@@ -1,0 +1,3 @@
+[webservers]
+web1 ansible_host=217.114.11.97 ansible_user=root ansible_ssh_private_key_file=/path/to/web1_private_key ansible_domain=217-1141197.hopto.org
+# web2 ansible_host=192.168.1.11 ansible_user=deploy ansible_ssh_private_key_file=/path/to/web2_private_key ansible_domain=web2.example.com
