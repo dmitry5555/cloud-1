@@ -32,7 +32,7 @@
           DB_USER=root
           DB_PASSWORD=my-secret-pw
           DB_HOST=mariadb
-          HOST_DOMAIN={{ ansible_domain }}
+          HOST_DOMAIN=217-1141197.hopto.org
         dest: /home/deploy/my-app/.env
         owner: deploy
         group: deploy
