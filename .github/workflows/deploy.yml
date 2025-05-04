@@ -47,16 +47,16 @@ jobs:
       - name: Set up SSH keys
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/web1_private_key
-          chmod 600 ~/.ssh/web1_private_key
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/web2_private_key
-          chmod 600 ~/.ssh/web2_private_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
           echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config # disable host key checking
           
-          # Move private keys to ansible directory
+          # Copy private keys to ansible directory
           mkdir -p ansible
-          mv ~/.ssh/web1_private_key ansible/web1_private_key
-          mv ~/.ssh/web2_private_key ansible/web2_private_key
+          cp ~/.ssh/id_rsa ansible/web1_private_key
+          # cp ~/.ssh/id_rsa ansible/web2_private_key
+          chmod 600 ansible/web1_private_key
+          # chmod 600 ansible/web2_private_key
 
       - name: Install Ansible
         run: |
