@@ -24,15 +24,7 @@
         owner: deploy
         group: deploy
         mode: 0644
-        
-    - name: Копирование .env файла
-      copy:
-        src: ../.env
-        dest: /home/deploy/my-app/.env
-        owner: deploy
-        group: deploy
-        mode: 0644
-
+ 
     - name: Копирование tar-архивов Docker-образов
       copy:
         src: ../{{ item }}
