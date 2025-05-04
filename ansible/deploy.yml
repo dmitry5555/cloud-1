@@ -25,6 +25,28 @@
         group: deploy
         mode: 0644
  
+    # - name: Создание .env файла
+    #   copy:
+    #     content: |
+    #       MARIADB_ROOT_PASSWORD=rootpassword
+    #       MARIADB_DATABASE=wordpress
+    #       MARIADB_USER=wordpress
+    #       MARIADB_PASSWORD=wordpress
+    #       HOST_DOMAIN={{ ansible_domain }}
+    #     dest: /home/deploy/my-app/.env
+    #     owner: deploy
+    #     group: deploy
+    #     mode: 0644
+
+    - name: Исправление прав доступа на существующий .env файл
+      file:
+        path: /home/deploy/my-app/.env
+        owner: deploy
+        group: deploy
+        mode: 0644
+      when: false  # Включите, если хотите использовать этот вариант вместо создания
+
+
     - name: Копирование tar-архивов Docker-образов
       copy:
         src: ../{{ item }}
