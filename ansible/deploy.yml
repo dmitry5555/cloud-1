@@ -24,18 +24,18 @@
         group: deploy
         mode: 0644
  
-    # - name: Создание .env файла
-    #   copy:
-    #     content: |
-    #       DB_NAME=wordpress
-    #       DB_USER=root
-    #       DB_PASSWORD=my-secret-pw
-    #       DB_HOST=mariadb
-    #       HOST_DOMAIN=217-1141197.hopto.org
-    #     dest: /home/deploy/my-app/.env
-    #     owner: deploy
-    #     group: deploy
-    #     mode: 0644
+    - name: Создание .env файла
+      copy:
+        content: |
+          DB_NAME=wordpress
+          DB_USER=root
+          DB_PASSWORD=my-secret-pw
+          DB_HOST=mariadb
+          HOST_DOMAIN=217-1141197.hopto.org
+        dest: /home/deploy/my-app/.env
+        owner: deploy
+        group: deploy
+        mode: 0644
 
     - name: Копирование tar-архивов Docker-образов
       copy:
