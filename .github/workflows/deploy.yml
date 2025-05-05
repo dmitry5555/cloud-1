@@ -1,4 +1,4 @@
-name: ${{ github.sha }} deploy
+name: deploy
 
 on:
   push:
