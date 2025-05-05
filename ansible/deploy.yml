@@ -57,13 +57,10 @@
         - nginx.tar
       ignore_errors: true # Игнорировать ошибки, если образы уже загружены
 
-    - name: Остановить и удалить все контейнеры и тома docker-compose
-      shell: docker-compose down -v
-      args:
-        chdir: /home/deploy/my-app
-
-    - name: Очистить неиспользуемые ресурсы Docker
-      shell: docker system prune -af
+    # - name: Остановить и удалить все контейнеры и тома docker-compose
+    #   shell: docker-compose down -v
+    #   args:
+    #     chdir: /home/deploy/my-app
       
     - name: Запуск docker-compose
       command: docker-compose up -d
@@ -73,3 +70,6 @@
         HOST_DOMAIN: "{{ ansible_domain }}"
         GITHUB_SHA: "{{ lookup('env', 'GITHUB_SHA') }}"
       ignore_errors: true # Игнорировать ошибки при первом запуске
+
+    - name: Очистить неиспользуемые ресурсы Docker
+      shell: docker system prune -af
