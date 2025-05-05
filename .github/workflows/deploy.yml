@@ -31,6 +31,14 @@ jobs:
           name: docker-images
           path: "*.tar"
 
+      - name: Проверить теги образов (опционально)
+        run: docker images
+
+      - name: (Опционально) Перетегировать образы
+        run: |
+          docker tag nginx:${{ github.sha }} nginx:latest
+          docker tag mariadb:${{ github.sha }} mariadb:latest
+          
   deploy:
     needs: build
     runs-on: ubuntu-latest
