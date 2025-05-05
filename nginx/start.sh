@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-# Проверка наличия переменной HOST_DOMAIN
+# Проверка наличия переменной HOST_DOMAIN 
 if [ -z "$HOST_DOMAIN" ]; then
   echo "ERROR: Переменная HOST_DOMAIN не установлена"
   HOST_DOMAIN="example.com" # значение по умолчанию
