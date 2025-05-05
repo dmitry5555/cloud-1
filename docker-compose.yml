@@ -11,7 +11,7 @@ services:
   #     - net42
 
   nginx:
-    image: nginx:cloud1
+    image: nginx:${GITHUB_SHA}
     # command: nginx -g 'daemon off;'
     # volumes:
     #   - wp_vol:/var/www/html
@@ -29,7 +29,7 @@ services:
 
   mariadb:
     # container_name: mariadb
-    image: mariadb:cloud1
+    image: mariadb:${GITHUB_SHA}
     env_file:
       - .env
     # ports:
