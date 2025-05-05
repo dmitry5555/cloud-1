@@ -1,4 +1,4 @@
-hosts: webservers
+- hosts: webservers
   become: true
   tasks:
     - name: Создание пользователя deploy
