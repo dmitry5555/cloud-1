@@ -57,13 +57,14 @@
         - nginx.tar
       ignore_errors: true # Игнорировать ошибки, если образы уже загружены
 
-    - name: Тегируем образы после загрузки
-      shell: |
-        docker tag nginx:cloud1 nginx:{{ lookup('env', 'GITHUB_SHA') }}
-        docker tag mariadb:cloud1 mariadb:{{ lookup('env', 'GITHUB_SHA') }}
+    - name: Остановить и удалить все контейнеры и тома docker-compose
+      shell: docker-compose down -v
       args:
-        executable: /bin/bash
+        chdir: /home/deploy/my-app
 
+    - name: Очистить неиспользуемые ресурсы Docker
+      shell: docker system prune -af
+      
     - name: Запуск docker-compose
       command: docker-compose up -d
       args:
