@@ -1,4 +1,4 @@
-name: cloud1 deploy
+name: ${{ github.sha }} deploy
 
 on:
   push:
@@ -17,13 +17,13 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker build -t mariadb:cloud1 -f ./mariadb/Dockerfile ./mariadb
-          docker build -t nginx:cloud1 -f ./nginx/Dockerfile ./nginx
+          docker build -t mariadb:${{ github.sha }} -f ./mariadb/Dockerfile ./mariadb
+          docker build -t nginx:${{ github.sha }} -f ./nginx/Dockerfile ./nginx
 
       - name: Save Docker images
         run: |
-          docker save -o mariadb.tar mariadb:cloud1
-          docker save -o nginx.tar nginx:cloud1
+          docker save -o mariadb.tar mariadb:${{ github.sha }}
+          docker save -o nginx.tar nginx:${{ github.sha }}
 
       - name: Upload Docker images
         uses: actions/upload-artifact@v4
