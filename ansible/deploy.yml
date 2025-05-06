@@ -40,7 +40,7 @@
     - name: Очистить неиспользуемые ресурсы Docker
       shell: docker system prune -af
 
-    - name: Копирование tar-архивов Docker-образов
+    - name: 💿 Копирование tar-архивов Docker-образов
       copy:
         src: ../{{ item }}
         dest: /home/deploy/my-app/{{ item }}
@@ -52,7 +52,7 @@
         - nginx.tar
 
 
-    - name: 💿 Загрузка Docker-образов
+    - name: 🐳 Загрузка Docker-образов
       command: docker load -i /home/deploy/my-app/{{ item }}
       args:
         chdir: /home/deploy/my-app
@@ -66,14 +66,9 @@
     #   args:
     #     chdir: /home/deploy/my-app
       
-    - name: Deploy with rollback on failure
+    - name: 🐳 Deploy with rollback on failure
       block:
-        - name: ✅ Deploy services
+        - name: Deploy services
           command: docker-compose up -d
           args:
             chdir: /home/deploy/my-app
-      # rescue:
-      #   - name: 🛼 Rollback on failure
-      #     command: docker-compose -f backup.yml up -d
-      #     args:
-      #       chdir: /home/deploy/my-app
