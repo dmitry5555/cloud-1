@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:buster-slim
 
 # Устанавливаем зависимости для nginx и certbot
 RUN apt update && apt install -y \
