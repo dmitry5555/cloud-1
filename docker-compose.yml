@@ -19,14 +19,15 @@ services:
     restart: unless-stopped
 
   wordpress:
-    build: wordpress:cloud1
+    image: wordpress:cloud1
     depends_on:
-      - mariadb:cloud1
+      - mariadb
+      - nginx
     volumes:
       - wp_vol:/var/www/html
     env_file:
       - .env
-
+    restart: unless-stopped
 
 volumes:
   db_vol:
