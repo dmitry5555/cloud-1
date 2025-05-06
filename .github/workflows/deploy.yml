@@ -14,8 +14,8 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker build -t mariadb:cloud1 -f ./mariadb/Dockerfile ./mariadb
-          docker build -t nginx:cloud1 -f ./nginx/Dockerfile ./nginx
+          DOCKER_BUILDKIT=0 docker build -t mariadb:cloud1 -f ./mariadb/Dockerfile ./mariadb
+          DOCKER_BUILDKIT=0 docker build -t nginx:cloud1 -f ./nginx/Dockerfile ./nginx
 
       - name: Save Docker images
         run: |
