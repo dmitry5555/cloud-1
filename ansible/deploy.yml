@@ -37,6 +37,9 @@
         group: deploy
         mode: 0644
 
+    - name: Очистить неиспользуемые ресурсы Docker
+      shell: docker system prune -af
+
     - name: Копирование tar-архивов Docker-образов
       copy:
         src: ../{{ item }}
@@ -47,6 +50,7 @@
       loop:
         - mariadb.tar
         - nginx.tar
+
 
     - name: Загрузка Docker-образов
       command: docker load -i /home/deploy/my-app/{{ item }}
@@ -70,6 +74,3 @@
         HOST_DOMAIN: "{{ ansible_domain }}"
         GITHUB_SHA: "{{ lookup('env', 'GITHUB_SHA') }}"
       ignore_errors: true # Игнорировать ошибки при первом запуске
-
-    - name: Очистить неиспользуемые ресурсы Docker
-      shell: docker system prune -af
