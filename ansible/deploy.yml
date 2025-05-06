@@ -72,8 +72,8 @@
           command: docker-compose up -d
           args:
             chdir: /home/deploy/my-app
-      rescue:
-        - name: 🛼 Rollback on failure
-          command: docker-compose -f backup.yml up -d
-          args:
-            chdir: /home/deploy/my-app
+      # rescue:
+      #   - name: 🛼 Rollback on failure
+      #     command: docker-compose -f backup.yml up -d
+      #     args:
+      #       chdir: /home/deploy/my-app

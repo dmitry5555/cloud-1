@@ -12,18 +12,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Docker Login (optional if using ghcr.io)
-        run: echo "Docker login step is skipped"
+      # - name: Docker Login (optional if using ghcr.io)
+      #   run: echo "Docker login step is skipped"
 
       - name: Build Docker images
         run: |
-          docker build -t mariadb:${{ github.sha }} -f ./mariadb/Dockerfile ./mariadb
-          docker build -t nginx:${{ github.sha }} -f ./nginx/Dockerfile ./nginx
+          docker build -t mariadb:cloud1 -f ./mariadb/Dockerfile ./mariadb
+          docker build -t nginx:cloud1 -f ./nginx/Dockerfile ./nginx
 
       - name: Save Docker images
         run: |
-          docker save -o mariadb.tar mariadb:${{ github.sha }}
-          docker save -o nginx.tar nginx:${{ github.sha }}
+          docker save -o mariadb.tar mariadb:cloud1
+          docker save -o nginx.tar nginx:cloud1
 
       - name: Upload Docker images
         uses: actions/upload-artifact@v4
@@ -34,10 +34,10 @@ jobs:
       - name: Проверить теги образов (опционально)
         run: docker images
 
-      - name: (Опционально) Перетегировать образы
-        run: |
-          docker tag nginx:${{ github.sha }} nginx:cloud1
-          docker tag mariadb:${{ github.sha }} mariadb:cloud1
+      # - name: (Опционально) Перетегировать образы
+      #   run: |
+      #     docker tag nginx:${{ github.sha }} nginx:cloud1
+      #     docker tag mariadb:${{ github.sha }} mariadb:cloud1
           
   deploy:
     needs: build
