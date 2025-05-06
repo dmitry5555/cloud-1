@@ -28,11 +28,7 @@ if [ -f "/etc/letsencrypt/live/$HOST_DOMAIN/fullchain.pem" ]; then
 else
   echo "Получение SSL через certbot для домена $HOST_DOMAIN..."
   # Проверяем, содержит ли домен точку (требование Let's Encrypt)
-  if [[ "$HOST_DOMAIN" == *.* ]]; then
-    certbot --nginx -d "$HOST_DOMAIN" --non-interactive --agree-tos -m mikrolux@gmail.com
-  else
-    echo "ОШИБКА: Домен $HOST_DOMAIN не может быть использован для SSL (нужна как минимум одна точка)"
-  fi
+  certbot --nginx -d "$HOST_DOMAIN" --non-interactive --agree-tos -m mikrolux@gmail.com
 fi
 
 # Установка основного SSL-конфига nginx
