@@ -1,6 +1,16 @@
 - hosts: webservers
   become: true
   tasks:
+    - name: ✏️ Проверка версий Docker и Docker Compose
+      shell: |
+        docker --version
+        docker-compose --version
+      register: docker_version_info
+
+    - name: ✏️ Вывод информации о версиях Docker
+      debug:
+        var: docker_version_info.stdout_lines
+
     - name: Создание пользователя deploy
       user:
         name: deploy
@@ -55,7 +65,6 @@
         - mariadb.tar
         - nginx.tar
 
-
     - name: 🐳 Загрузка Docker-образов
       command: docker load -i /home/deploy/my-app/{{ item }}
       args:
@@ -71,9 +80,9 @@
     #     chdir: /home/deploy/my-app
 
     # try --force-recreate
-    - name: 🐳 Deploy with rollback on failure
+    - name: 🐳 Deploy
       block:
         - name: Deploy services
-          command: docker-compose up -d 
+          command: docker-compose up -d --force-recreate
           args:
             chdir: /home/deploy/my-app
