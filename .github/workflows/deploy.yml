@@ -12,10 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: ✏️ Check Docker version
-        run: |
-          docker --version
-          docker-compose --version
+      # - name: ✏️ Check Docker version
+      #   run: |
+      #     docker --version
+      #     docker-compose --version
 
       - name: Build Docker images
         run: |
