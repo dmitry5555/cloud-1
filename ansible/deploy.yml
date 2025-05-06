@@ -35,7 +35,7 @@
           DB_USER=root
           DB_PASSWORD=my-secret-pw
           DB_HOST=mariadb
-          HOST_DOMAIN=w114w11w97.zapto.org
+          HOST_DOMAIN=217a114a11a97.zapto.org
         dest: /home/deploy/my-app/.env
         owner: deploy
         group: deploy
