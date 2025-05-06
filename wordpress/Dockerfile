@@ -13,7 +13,8 @@ RUN apt update -y && \
 
 COPY ./script.sh /
 COPY ./wp-config.php /
+RUN chmod +x /script.sh
 # COPY ./tools/up.webp /
 # COPY ./tools/wp-config.php /
 
-CMD [ "/script.sh" ]
+CMD ["/script.sh"]
