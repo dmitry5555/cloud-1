@@ -18,6 +18,16 @@ services:
       - db_vol:/var/lib/mysql
     restart: unless-stopped
 
+  wordpress:
+    build: wordpress:cloud1
+    depends_on:
+      - mariadb:cloud1
+    volumes:
+      - wp_vol:/var/www/html
+    env_file:
+      - .env
+
+
 volumes:
   db_vol:
     driver: local
