@@ -64,6 +64,7 @@
       loop:
         - mariadb.tar
         - nginx.tar
+        - wordpress.tar
 
     - name: 🐳 Загрузка Docker-образов
       command: docker load -i /home/deploy/my-app/{{ item }}
@@ -72,6 +73,7 @@
       loop:
         - mariadb.tar
         - nginx.tar
+        - wordpress.tar
       ignore_errors: true # Игнорировать ошибки, если образы уже загружены
 
     - name: Остановить все контейнеры и тома docker-compose
