@@ -31,7 +31,7 @@
           DB_USER=root
           DB_PASSWORD=my-secret-pw
           DB_HOST=mariadb
-          HOST_DOMAIN=217-1141197.hopto.org
+          HOST_DOMAIN={{ ansible_domain }}
         dest: /home/deploy/my-app/.env
         owner: deploy
         group: deploy
@@ -65,10 +65,11 @@
     #   shell: docker-compose down -v
     #   args:
     #     chdir: /home/deploy/my-app
-      
+
+    # try --force-recreate
     - name: 🐳 Deploy with rollback on failure
       block:
         - name: Deploy services
-          command: docker-compose up -d
+          command: docker-compose up -d 
           args:
             chdir: /home/deploy/my-app
