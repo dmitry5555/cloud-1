@@ -11,7 +11,7 @@ services:
   #     - net42
 
   nginx:
-    image: nginx:latest
+    image: nginx:cloud1
     # command: nginx -g 'daemon off;'
     # volumes:
     #   - wp_vol:/var/www/html
@@ -24,12 +24,12 @@ services:
       - .env
     volumes:
       - nginx_vol:/etc/letsencrypt
-    networks:
-      - net42
+    # networks:
+    #   - net42
 
   mariadb:
     # container_name: mariadb
-    image: mariadb:10.3.39
+    image: mariadb:cloud1
     env_file:
       - .env
     # ports:
@@ -38,8 +38,8 @@ services:
     #  - wordpress
     volumes:
       - db_vol:/var/lib/mysql
-    networks:
-      - net42
+    # networks:
+    #   - net42
 
 volumes:
   db_vol:
@@ -57,6 +57,6 @@ volumes:
   nginx_vol:
     driver: local # local host
 
-networks:
-  net42:
-    driver: bridge
+# networks:
+#   net42:
+#     driver: bridge

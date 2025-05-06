@@ -36,8 +36,8 @@ jobs:
 
       - name: (Опционально) Перетегировать образы
         run: |
-          docker tag nginx:${{ github.sha }} nginx:latest
-          docker tag mariadb:${{ github.sha }} mariadb:latest
+          docker tag nginx:${{ github.sha }} nginx:cloud1
+          docker tag mariadb:${{ github.sha }} mariadb:cloud1
           
   deploy:
     needs: build
