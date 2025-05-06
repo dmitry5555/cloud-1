@@ -24,6 +24,10 @@
         group: deploy
         mode: 0644
  
+    - name: ✏️ Debug domain
+      debug:
+        msg: "Domain is: {{ ansible_domain }}"
+        
     - name: Создание .env файла
       copy:
         content: |
@@ -31,7 +35,7 @@
           DB_USER=root
           DB_PASSWORD=my-secret-pw
           DB_HOST=mariadb
-          HOST_DOMAIN={{ ansible_domain }}
+          HOST_DOMAIN=w114w11w97.zapto.org
         dest: /home/deploy/my-app/.env
         owner: deploy
         group: deploy
