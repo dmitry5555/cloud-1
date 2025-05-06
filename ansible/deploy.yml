@@ -51,7 +51,7 @@
         group: deploy
         mode: 0644
 
-    - name: Очистить неиспользуемые ресурсы Docker
+    - name: Очистить неиспользуемые контейнеры и образы Docker
       shell: docker system prune -af
 
     - name: 💿 Копирование tar-архивов Docker-образов
@@ -74,15 +74,15 @@
         - nginx.tar
       ignore_errors: true # Игнорировать ошибки, если образы уже загружены
 
-    # - name: Остановить и удалить все контейнеры и тома docker-compose
-    #   shell: docker-compose down -v
-    #   args:
-    #     chdir: /home/deploy/my-app
+    - name: Остановить все контейнеры и тома docker-compose
+      shell: docker-compose down
+      args:
+        chdir: /home/deploy/my-app
 
     # try --force-recreate
     - name: 🐳 Deploy
       block:
         - name: Deploy services
-          command: docker-compose up -d --force-recreate
+          command: docker-compose up -d
           args:
             chdir: /home/deploy/my-app
