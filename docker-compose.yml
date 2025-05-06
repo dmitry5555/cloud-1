@@ -1,14 +1,26 @@
 services:
+
+  wordpress:
+    image: wordpress:cloud1
+    depends_on:
+      - mariadb
+    volumes:
+      - wp_vol:/var/www/html
+    env_file:
+      - .env
+
   nginx:
     image: nginx:cloud1
     ports:
       - 80:80
       - 443:443
+    depends_on:
+      - wordpress
     env_file:
       - .env
     volumes:
       - nginx_vol:/etc/letsencrypt
-    restart: unless-stopped
+      - wp_vol:/var/www/html
 
   mariadb:
     image: mariadb:cloud1
@@ -16,18 +28,6 @@ services:
       - .env
     volumes:
       - db_vol:/var/lib/mysql
-    restart: unless-stopped
-
-  wordpress:
-    image: wordpress:cloud1
-    depends_on:
-      - mariadb
-      - nginx
-    volumes:
-      - wp_vol:/var/www/html
-    env_file:
-      - .env
-    restart: unless-stopped
 
 volumes:
   db_vol:
