@@ -1,62 +1,27 @@
 services:
-  # wordpress:
-  #   build: ./requirements/wordpress/.
-  #   depends_on:
-  #     - mariadb
-  #   volumes:
-  #     - wp_vol:/var/www/html
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - net42
-
   nginx:
     image: nginx:cloud1
-    # command: nginx -g 'daemon off;'
-    # volumes:
-    #   - wp_vol:/var/www/html
     ports:
       - 80:80
       - 443:443
-    # depends_on:
-    #   - wordpress
     env_file:
       - .env
     volumes:
       - nginx_vol:/etc/letsencrypt
-    # networks:
-    #   - net42
+    restart: unless-stopped
 
   mariadb:
-    # container_name: mariadb
     image: mariadb:cloud1
     env_file:
       - .env
-    # ports:
-    #   - 3306:3306
-    #depends_on:
-    #  - wordpress
     volumes:
       - db_vol:/var/lib/mysql
-    # networks:
-    #   - net42
+    restart: unless-stopped
 
 volumes:
   db_vol:
-    driver: local # local host
-    # driver_opts:
-    #   device: /Users/dmitrylarionov/Desktop/mysql
-    #   type: none
-    #   o: bind # any change affect immediately
+    driver: local
   wp_vol:
     driver: local
-  #   driver_opts:
-  #     device: /Users/dmitrylarionov/Desktop/wordpress
-  #     type: none
-  #     o: bind
   nginx_vol:
-    driver: local # local host
-
-# networks:
-#   net42:
-#     driver: bridge
+    driver: local
