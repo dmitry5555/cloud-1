@@ -72,5 +72,5 @@
         chdir: /home/deploy/my-app
       environment:
         HOST_DOMAIN: "{{ ansible_domain }}"
-        GITHUB_SHA: "{{ lookup('env', 'GITHUB_SHA') }}"
+        # GITHUB_SHA: "{{ lookup('env', 'GITHUB_SHA') }}"
       ignore_errors: true # Игнорировать ошибки при первом запуске
