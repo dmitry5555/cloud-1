@@ -46,10 +46,6 @@
           DB_PASSWORD=my-secret-pw
           DB_HOST=mariadb
           HOST_DOMAIN=217a114a11a97.zapto.org
-          ENV_DB_NAME=wordpress
-          ENV_DB_USER=root
-          ENV_DB_PASSWORD=my-secret-pw
-          ENV_DB_HOST=mariadb
           
         dest: /home/deploy/my-app/.env
         owner: deploy
