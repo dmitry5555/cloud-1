@@ -18,8 +18,8 @@
  * @package WordPress
  */
 
-define ('WP_HOME', 'http://217a114a11a97.zapto.org/');
-define ('WP_SITEURL', 'http://217a114a11a97.zapto.org/');
+define ('WP_HOME', 'ENV_DB_DOMAIN');
+define ('WP_SITEURL', 'ENV_DB_DOMAIN');
 
 // ** Database settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */

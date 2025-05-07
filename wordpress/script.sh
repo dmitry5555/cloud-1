@@ -24,6 +24,7 @@ sed -i "s/ENV_DB_NAME/$DB_NAME/g" /var/www/html/wp-config.php
 sed -i "s/ENV_DB_USER/$DB_USER/g" /var/www/html/wp-config.php
 sed -i "s/ENV_DB_PASSWORD/$DB_PASSWORD/g" /var/www/html/wp-config.php
 sed -i "s/ENV_DB_HOST/$DB_HOST/g" /var/www/html/wp-config.php
+sed -i "s/ENV_DB_DOMAIN/$DB_DOMAIN/g" /var/www/html/wp-config.php
 
 # chown www-data:www-data wp-config.php
 
