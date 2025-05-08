@@ -8,6 +8,7 @@ services:
       - wp_vol:/var/www/html
     env_file:
       - .env
+    restart: always
 
   nginx:
     image: nginx:cloud1
@@ -21,6 +22,7 @@ services:
     volumes:
       - nginx_vol:/etc/letsencrypt
       - wp_vol:/var/www/html
+    restart: always
 
   mariadb:
     image: mariadb:cloud1
@@ -28,6 +30,7 @@ services:
       - .env
     volumes:
       - db_vol:/var/lib/mysql
+    restart: always
 
 volumes:
   db_vol:
