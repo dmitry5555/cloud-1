@@ -16,10 +16,10 @@ RUN wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.zi
     mv /usr/share/phpMyAdmin-* /usr/share/phpmyadmin && \
     rm /tmp/phpmyadmin.zip
 
-RUN sed -i 's/;daemonize = yes/daemonize = no/' /etc/php/7.4/fpm/php-fpm.conf
+RUN sed -i 's/;daemonize = yes/daemonize = no/' /etc/php/7.3/fpm/php-fpm.conf
 
 EXPOSE 9000
 
 WORKDIR /usr/share/phpmyadmin
 
-CMD ["php-fpm7.4", "-F"]
+CMD ["php-fpm7.3", "-F"]
