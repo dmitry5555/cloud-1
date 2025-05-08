@@ -41,13 +41,13 @@
     - name: 💿 Create .env 
       copy:
         content: |
-          DB_NAME=wordpress
-          DB_USER=root
-          DB_PASSWORD=my-secret-pw
-          DB_HOST=mariadb
+          DB_NAME={{ lookup('env', 'DB_NAME') }}
+          DB_USER={{ lookup('env', 'DB_USER') }}
+          DB_PASSWORD={{ lookup('env', 'DB_PASSWORD') }}
+          DB_HOST={{ lookup('env', 'DB_HOST') }}
           DB_DOMAIN={{ ansible_site_domain }}
           HOST_DOMAIN={{ ansible_site_domain }}
-          
+
         dest: /home/deploy/my-app/.env
         owner: deploy
         group: deploy
