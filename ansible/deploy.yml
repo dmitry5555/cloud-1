@@ -1,24 +1,24 @@
 - hosts: webservers
   become: true
   tasks:
-    - name: ✏️ Проверка версий Docker и Docker Compose
+    - name: ✏️ Check Docker version
       shell: |
         docker --version
         docker-compose --version
       register: docker_version_info
 
-    - name: ✏️ Вывод информации о версиях Docker
+    - name: ✏️ Docker Version
       debug:
         var: docker_version_info.stdout_lines
 
-    - name: Создание пользователя deploy
+    - name: Create user deploy
       user:
         name: deploy
         shell: /bin/bash
         create_home: yes
         system: yes
   
-    - name: Создание директории развертывания
+    - name: Create app directory
       file:
         path: /home/deploy/my-app
         state: directory
@@ -26,7 +26,7 @@
         group: deploy
         mode: 0755
 
-    - name: Копирование docker-compose.yml
+    - name: 💿 Copy docker-compose.yml
       copy:
         src: ../docker-compose.yml
         dest: /home/deploy/my-app/docker-compose.yml
@@ -34,11 +34,11 @@
         group: deploy
         mode: 0644
  
-    - name: ✏️ Debug domain
+    - name: ✏️ Show domain name
       debug:
-        msg: "Domain is: {{ ansible_site_domain }}"
+        msg: "Current domain: {{ ansible_site_domain }}"
         
-    - name: Создание .env файла
+    - name: 💿 Create .env 
       copy:
         content: |
           DB_NAME=wordpress
@@ -53,10 +53,10 @@
         group: deploy
         mode: 0644
 
-    - name: Очистить неиспользуемые контейнеры и образы Docker
+    - name: Clean cont. + images from Docker
       shell: docker system prune -af
 
-    - name: 💿 Копирование tar-архивов Docker-образов
+    - name: 💿 Copy tar images
       copy:
         src: ../{{ item }}
         dest: /home/deploy/my-app/{{ item }}
@@ -68,7 +68,7 @@
         - nginx.tar
         - wordpress.tar
 
-    - name: 🐳 Загрузка Docker-образов
+    - name: 🐳 Load Docker images
       command: docker load -i /home/deploy/my-app/{{ item }}
       args:
         chdir: /home/deploy/my-app
@@ -76,14 +76,14 @@
         - mariadb.tar
         - nginx.tar
         - wordpress.tar
-      ignore_errors: true # Игнорировать ошибки, если образы уже загружены
+      ignore_errors: true # Ignore errors if the image already exists
 
-    - name: Остановить все контейнеры и тома docker-compose
+    - name: 🐳 Stop containers and volumes docker-compose
       shell: docker-compose down
       args:
         chdir: /home/deploy/my-app
 
-    # try --force-recreate
+    # --force-recreate
     - name: 🐳 Deploy
       block:
         - name: Deploy services

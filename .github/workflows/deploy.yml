@@ -12,30 +12,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # - name: ✏️ Check Docker version
-      #   run: |
-      #     docker --version
-      #     docker-compose --version
-
-      - name: Build Docker images
+      - name: 🐳 Build Docker images
         run: |
           DOCKER_BUILDKIT=1 docker build -t mariadb:cloud1 -f ./mariadb/Dockerfile ./mariadb
           DOCKER_BUILDKIT=1 docker build -t nginx:cloud1 -f ./nginx/Dockerfile ./nginx
           DOCKER_BUILDKIT=1 docker build -t wordpress:cloud1 -f ./wordpress/Dockerfile ./wordpress
 
-      - name: Save Docker images
+      - name: 🐳 Save Docker images
         run: |
           docker save -o mariadb.tar mariadb:cloud1
           docker save -o nginx.tar nginx:cloud1
           docker save -o wordpress.tar wordpress:cloud1
-      - name: Upload Docker images
+
+      - name: 🐳 Upload Docker images
         uses: actions/upload-artifact@v4
         with:
           name: docker-images
           path: "*.tar"
 
-      - name: Проверить теги образов (опционально)
-        run: docker images
+      # - name: Проверить теги образов (опционально)
+      #   run: docker images
 
   deploy:
     needs: build
@@ -44,7 +40,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Download Docker images
+      - name: 💿 Download Docker images
         uses: actions/download-artifact@v4
         with:
           name: docker-images
@@ -64,12 +60,12 @@ jobs:
           chmod 600 ansible/web1_private_key
           # chmod 600 ansible/web2_private_key
 
-      - name: Install Ansible
+      - name: 🅰️ Install Ansible
         run: |
           sudo apt-get update
           sudo apt-get install -y ansible
 
-      - name: Run Ansible playbook
+      - name: 🅰️ Run Ansible playbook
         run: ansible-playbook -i ansible/hosts.ini ansible/deploy.yml
         env:
             ANSIBLE_HOST_KEY_CHECKING: False
