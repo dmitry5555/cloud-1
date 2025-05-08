@@ -18,6 +18,8 @@ RUN wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.zi
 
 RUN sed -i 's/;daemonize = yes/daemonize = no/' /etc/php/7.3/fpm/php-fpm.conf
 
+RUN mkdir -p /run/php
+
 EXPOSE 9000
 
 WORKDIR /usr/share/phpmyadmin
