@@ -28,4 +28,4 @@ EXPOSE 9000
 WORKDIR /usr/share/phpmyadmin
 
 RUN cp /usr/share/phpmyadmin/config.sample.inc.php /usr/share/phpmyadmin/config.inc.php && \
-    sed -i "s/\$cfg\['blowfish_secret'\] = '';/\$cfg\['blowfish_secret'\]
+    sed -i "s/\$cfg\['blowfish_secret'\] = '';/\$cfg\['blowfish_secret'\] = 'somesecretphrase';/" /usr/share/phpmyadmin/config.inc.php
