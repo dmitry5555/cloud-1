@@ -17,12 +17,14 @@ jobs:
           DOCKER_BUILDKIT=1 docker build -t mariadb:cloud1 -f ./mariadb/Dockerfile ./mariadb
           DOCKER_BUILDKIT=1 docker build -t nginx:cloud1 -f ./nginx/Dockerfile ./nginx
           DOCKER_BUILDKIT=1 docker build -t wordpress:cloud1 -f ./wordpress/Dockerfile ./wordpress
+          DOCKER_BUILDKIT=1 docker build -t phpmyadmin:cloud1 -f ./phpmyadmin/Dockerfile ./phpmyadmin
 
       - name: 🐳 Save Docker images
         run: |
           docker save -o mariadb.tar mariadb:cloud1
           docker save -o nginx.tar nginx:cloud1
           docker save -o wordpress.tar wordpress:cloud1
+          docker save -o phpmyadmin.tar phpmyadmin:cloud1
 
       - name: 🐳 Upload Docker images
         uses: actions/upload-artifact@v4

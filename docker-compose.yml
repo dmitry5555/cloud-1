@@ -36,10 +36,14 @@ services:
     image: phpmyadmin:cloud1
     depends_on:
       - mariadb
+    volumes:
+      - wp_vol:/var/www/html
     environment:
       PMA_HOST: ${DB_HOST}
       PMA_USER: ${DB_USER}
       PMA_PASSWORD: ${DB_PASSWORD}
+    restart: always
+
 
 volumes:
   db_vol:

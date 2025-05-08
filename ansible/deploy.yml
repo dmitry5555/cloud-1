@@ -67,6 +67,7 @@
         - mariadb.tar
         - nginx.tar
         - wordpress.tar
+        - phpmyadmin.tar
 
     - name: 🐳 Load Docker images
       command: docker load -i /home/deploy/my-app/{{ item }}
@@ -76,6 +77,7 @@
         - mariadb.tar
         - nginx.tar
         - wordpress.tar
+        - phpmyadmin.tar
       ignore_errors: true # Ignore errors if the image already exists
 
     - name: 🐳 Stop containers and volumes docker-compose
