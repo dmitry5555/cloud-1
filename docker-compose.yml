@@ -22,6 +22,7 @@ services:
     volumes:
       - nginx_vol:/etc/letsencrypt
       - wp_vol:/var/www/html
+      - pma_vol:/usr/share/phpmyadmin
     restart: always
 
   mariadb:
@@ -36,8 +37,8 @@ services:
     image: phpmyadmin:cloud1
     depends_on:
       - mariadb
-    # volumes:
-    #   - wp_vol:/var/www/html
+    volumes:
+      - pma_vol:/usr/share/phpmyadmin
     environment:
       PMA_HOST: ${DB_HOST}
       PMA_USER: ${DB_USER}
@@ -51,4 +52,6 @@ volumes:
   wp_vol:
     driver: local
   nginx_vol:
+    driver: local
+  pma_vol:
     driver: local
