@@ -32,6 +32,15 @@ services:
       - db_vol:/var/lib/mysql
     restart: always
 
+  phpmyadmin:
+    image: phpmyadmin:cloud1
+    depends_on:
+      - mariadb
+    environment:
+      PMA_HOST: ${DB_HOST}
+      PMA_USER: ${DB_USER}
+      PMA_PASSWORD: ${DB_PASSWORD}
+
 volumes:
   db_vol:
     driver: local
