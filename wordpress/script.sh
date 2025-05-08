@@ -10,9 +10,9 @@ sed -i 's/listen = \/run\/php\/php7.3-fpm.sock/listen = 9000/g' /etc/php/7.3/fpm
 mkdir /run/php
 
 # wp
-curl -O https://wordpress.org/wordpress-6.5.tar.gz
-tar -xvzf wordpress-6.5.tar.gz --strip-components=1
-rm wordpress-6.5.tar.gz
+curl -O https://wordpress.org/wordpress-6.8.1.tar.gz
+tar -xvzf wordpress-6.8.1.tar.gz --strip-components=1
+rm wordpress-6.8.1.tar.gz
 chown -R www-data:www-data /var/www/html
 
 # 42

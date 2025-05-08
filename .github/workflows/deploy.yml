@@ -30,9 +30,6 @@ jobs:
           name: docker-images
           path: "*.tar"
 
-      # - name: Проверить теги образов (опционально)
-      #   run: docker images
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -46,6 +43,7 @@ jobs:
           name: docker-images
           path: .
 
+      # copy ssh key to ansible worker so it can access vps
       - name: Set up SSH keys
         run: |
           mkdir -p ~/.ssh
@@ -53,12 +51,9 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config # disable host key checking
           
-          # Copy private keys to ansible directory
           mkdir -p ansible
-          cp ~/.ssh/id_rsa ansible/web1_private_key
-          # cp ~/.ssh/id_rsa ansible/web2_private_key
-          chmod 600 ansible/web1_private_key
-          # chmod 600 ansible/web2_private_key
+          cp ~/.ssh/id_rsa ansible/web_private_key
+          chmod 600 ansible/web_private_key
 
       - name: 🅰️ Install Ansible
         run: |
@@ -69,7 +64,5 @@ jobs:
         run: ansible-playbook -i ansible/hosts.ini ansible/deploy.yml
         env:
             ANSIBLE_HOST_KEY_CHECKING: False
-            # GITHUB_REPOSITORY: ${{ github.repository }}
-            # GITHUB_RUN_NUMBER: ${{ github.run_number }}
             # GITHUB_SHA: ${{ github.sha }}
             
