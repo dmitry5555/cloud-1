@@ -44,7 +44,7 @@ jobs:
           path: .
 
       # copy ssh key to ansible worker so it can access vps
-      - name: Set up SSH keys
+      - name: Set up SSH keys 
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
