@@ -11,20 +11,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
-      - name: 🐳 Build Docker images 
+      - name: 🔍 Check which directories changed
+        id: changed_dirs
         run: |
-          DOCKER_BUILDKIT=1 docker build -t mariadb:cloud1 -f ./mariadb/Dockerfile ./mariadb
-          DOCKER_BUILDKIT=1 docker build -t nginx:cloud1 -f ./nginx/Dockerfile ./nginx
-          DOCKER_BUILDKIT=1 docker build -t wordpress:cloud1 -f ./wordpress/Dockerfile ./wordpress
-          DOCKER_BUILDKIT=1 docker build -t phpmyadmin:cloud1 -f ./phpmyadmin/Dockerfile ./phpmyadmin
+          CHANGED=$(git diff --name-only HEAD HEAD~1 | grep -E '^(mariadb|nginx|wordpress|phpmyadmin)/' | cut -d/ -f1 | sort -u | tr '\n' ' ')
+          echo "Changed directories: $CHANGED"
+          echo "dirs=$CHANGED" >> $GITHUB_OUTPUT
 
-      - name: 🐳 Save Docker images
+      - name: 🐳 Build Docker images
         run: |
-          docker save -o mariadb.tar mariadb:cloud1
-          docker save -o nginx.tar nginx:cloud1
-          docker save -o wordpress.tar wordpress:cloud1
-          docker save -o phpmyadmin.tar phpmyadmin:cloud1
+          for dir in ${{ steps.changed_dirs.outputs.dirs }}; do
+            echo "Building $dir image..."
+            DOCKER_BUILDKIT=1 docker build -t $dir:cloud1 -f ./$dir/Dockerfile ./$dir
+            docker save -o $dir.tar $dir:cloud1
+          done
 
       - name: 🐳 Upload Docker images
         uses: actions/upload-artifact@v4
