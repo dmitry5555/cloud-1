@@ -7,7 +7,7 @@
         docker-compose --version
       register: docker_version_info
 
-    - name: ✏️ Docker Version Info
+    - name: ✏️ Docker Version Info 
       debug:
         var: docker_version_info.stdout_lines
 
