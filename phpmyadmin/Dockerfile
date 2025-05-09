@@ -24,6 +24,7 @@ RUN mkdir -p /run/php
 WORKDIR /usr/share/phpmyadmin
 RUN cp config.sample.inc.php config.inc.php && \
     sed -i "s/\$cfg\['blowfish_secret'\] = '';/\$cfg\['blowfish_secret'\] = 'somesecretphrase';/" config.inc.php
+    sed -i "s/\$cfg\['Servers'\]\[\$i\]\['host'\] = 'localhost';/\$cfg\['Servers'\]\[\$i\]\['host'\] = 'mariadb';/" config.inc.php
 
 EXPOSE 9000
 

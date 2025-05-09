@@ -12,7 +12,7 @@ if [ "$DB_EXISTS" -eq 1 ]; then
     echo "CREATE USER '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD' ;" >> db1.sql
     echo "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%' ;" >> db1.sql
 	mysql < db1.sql
-	mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < /dump.sql
+	# mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < /dump.sql
 fi
 
 kill $(cat /var/run/mysqld/mysqld.pid)
