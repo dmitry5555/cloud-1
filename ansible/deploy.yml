@@ -68,17 +68,16 @@
         - nginx.tar
         - wordpress.tar
         - phpmyadmin.tar
+      ignore_errors: yes
+      register: copy_results
 
     - name: 🐳 Load Docker images
-      command: docker load -i /home/deploy/my-app/{{ item }}
+      shell: docker load -i "/home/deploy/my-app/{{ item.item }}"
       args:
         chdir: /home/deploy/my-app
-      loop:
-        - mariadb.tar
-        - nginx.tar
-        - wordpress.tar
-        - phpmyadmin.tar
-      ignore_errors: true # Ignore errors if the image already exists
+      loop: "{{ copy_results.results }}"
+      when: item.changed | default(false)
+      ignore_errors: yes
 
     - name: 🐳 Stop containers and volumes docker-compose
       shell: docker-compose down
